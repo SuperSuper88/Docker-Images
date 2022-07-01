@@ -1,0 +1,93 @@
+version: "3.7"
+
+# Les services définissent les container que nous allons utiliser
+services:
+    # ----------------------------------------------------#
+    # *******               Web Server            ******* #
+    # ----------------------------------------------------#
+    # Container avec Apcha2 Server
+    apache:
+        image: httpd:latest
+        container_name: apache
+        hostname: apache
+
+        # Restart gère le comportement du container en cas d'arrêt
+        #   "No" = Le container ne redémarre pas en cas de plantage
+        #   "Always" = Le container tent de redémarrer - tot le temps
+        #   "unless-stopped" = Redémarre que si l'arrêt n'a pas été demandé
+        restart: "unless-stopped"
+
+        environment:
+          - VIRTUAL_HOST=http://localhost, https://localhost
+          - DB_HOST=mariadb
+
+        ports:
+          #- 80:80
+          - 443:443
+
+        # Persistent Volume(s) allow to have local file inside the container
+        # @usage: - local directory:container directory
+        volumes:
+            - ./Sites:/var/www/localhost/htdocs
+            - ./Sites/log:/var/log/apache2
+
+    # ----------------------------------------------------#
+    # *******     Database(s) Managment Tools     ******* #
+    # ----------------------------------------------------#
+    phpmyadmin:
+        image: phpmyadmin:latest
+        container_name: phpmyadmin
+        hostname: phpmyadmin
+
+        restart: "unless-stopped"
+
+        environment:
+          MYSQL_ROOT_PASSWORD: toor
+          PMA_HOST: mariadb
+
+        ports:
+          - 8080:80
+        # Persistent Volume(s)
+
+    # ----------------------------------------------------#
+    # *******          Database(s) Sever          ******* #
+    # ----------------------------------------------------#
+    mariadb:
+        image: mariadb:latest
+        container_name: mariadb
+        hostname: mariadb
+
+        restart: "unless-stopped"
+
+        # Variable d'environement passée au container
+        environment:
+          MYSQL_HOST: mariadb
+          MYSQL_USER: root
+          MYSQL_PASSWORD: toor
+          MYSQL_DATABASE: ahmeddb
+          MYSQL_ROOT_PASSWORD: toor
+
+        expose:
+          - 3306
+        ports:
+          - 3306:3306
+
+        volumes:
+            - ./MariaDB/:/var/lib/mysql
+#
+# Volumes docker que nous allons utiliser [Optionel]
+#    Par défaut Docker donne un UUID
+#    Nomer un volumes permet d'y voir plus clair
+#
+volumes:
+    {}
+
+#
+# Networks permet de créer un réseaux particulier pour les container attachés à
+# ce fichier docker-compose.
+#
+# networks:
+#     ahmed.corp:
+#         name: ahmed.corp
+#         ipam:
+#             driver: default

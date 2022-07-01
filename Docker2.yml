@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+
+    debian:
+        image: debain:latest
+        container_name: debian
+        hostname: debian
+
+        restart: "restart"
+
+    mariadb:
+        image: mariadb:latest
+        container_name: mariadb
+        hostname: mariadb
+
+        restart: "restart"
+
+        environment:
+          MYSQL_HOST: mariadb
+          MYSQL_USER: root
+          MYSQL_PASSWORD: toor
+          MYSQL_ROOT_PASSWORD: toor
+
+        expose:
+          - 3306
+        ports:
+          - 3306:3306
+
+        volumes:
+            - ./MariaDB/:/var/lib/mysql
