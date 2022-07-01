@@ -87,7 +87,7 @@ volumes:
 # ce fichier docker-compose.
 #
 # networks:
-#     ahmed.corp:
-#         name: ahmed.corp
+#     corp.corp:
+#         name: corp.corp
 #         ipam:
 #             driver: default
